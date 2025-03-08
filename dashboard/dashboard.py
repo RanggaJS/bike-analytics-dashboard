@@ -3,7 +3,7 @@ import plotly.express as px
 import streamlit as st
 
 # Load data
-CSV_FILE = "all_data.csv"
+CSV_FILE = "dashboard/all_data.csv"
 all_df = pd.read_csv(CSV_FILE, parse_dates=["dteday"])
 
 # Pastikan dataset memiliki kolom yang diperlukan
