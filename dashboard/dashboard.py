@@ -43,36 +43,67 @@ st.title("Dashboard Bike Sharing")
 st.write(f"Menampilkan data untuk musim {season} dan rentang jam {time_filter}")
 st.dataframe(filtered_df)
 
-# Visualisasi Pengaruh Cuaca terhadap Penyewaan Sepeda
+# Visualisasi Pengaruh Cuaca dan Musim terhadap Penyewaan Sepeda
 fig_weather = px.box(
     filtered_df, 
     x="weathersit", 
     y="cnt", 
     color="weathersit",
-    title="Pengaruh Cuaca terhadap Penyewaan Sepeda",
-    labels={"cnt": "Jumlah Penyewaan", "weathersit": "Kondisi Cuaca"}
+    facet_col="season",  # Membuat subplot berdasarkan musim
+    title="Pengaruh Cuaca dan Musim terhadap Penyewaan Sepeda",
+    labels={"cnt": "Jumlah Penyewaan", "weathersit": "Kondisi Cuaca", "season": "Musim"}
 )
 st.plotly_chart(fig_weather)
 
-# Visualisasi Tren Penyewaan Berdasarkan Waktu
-# Hanya menjumlahkan kolom numerik
+
+# Visualisasi Tren Penyewaan Berdasarkan Jam
+# Menghitung rata-rata kolom numerik
 fig_trend = px.line(
-    filtered_df.groupby("hr")[["cnt", "casual", "registered"]].sum().reset_index(),
+    filtered_df.groupby("hr")[["cnt", "casual", "registered"]].mean().reset_index(),
     x="hr", y="cnt",
-    title="Tren Penyewaan Sepeda Berdasarkan Waktu",
-    labels={"cnt": "Jumlah Penyewaan", "hr": "Jam"}
+    title="Tren Penyewaan Sepeda Berdasarkan Jam",
+    labels={"cnt": "Rata-rata Penyewaan", "hr": "Jam"}
 )
 st.plotly_chart(fig_trend)
 
 # Visualisasi Perbedaan Penggunaan antara Casual dan Registered
 if user_type_filter == "Casual":
-    fig_user = px.histogram(filtered_df, x="hr", y="casual", title="Penyewaan oleh Pengguna Kasual")
+    fig_user = px.histogram(
+        filtered_df, 
+        x="hr", 
+        y="casual", 
+        histfunc="avg",  
+        title="Rata-rata Penyewaan oleh Pengguna Kasual",
+        labels={"hr": "Jam"}
+    )
+    fig_user.update_layout(yaxis_title="Rata-rata Penyewaan")  # Mengubah label sumbu Y
+
 elif user_type_filter == "Registered":
-    fig_user = px.histogram(filtered_df, x="hr", y="registered", title="Penyewaan oleh Pengguna Terdaftar")
+    fig_user = px.histogram(
+        filtered_df, 
+        x="hr", 
+        y="registered", 
+        histfunc="avg",  
+        title="Rata-rata Penyewaan oleh Pengguna Terdaftar",
+        labels={"hr": "Jam"}
+    )
+    fig_user.update_layout(yaxis_title="Rata-rata Penyewaan")
+
 else:
-    fig_user = px.histogram(filtered_df, x="hr", y=["casual", "registered"], barmode="group", title="Perbedaan Penggunaan Kasual vs. Terdaftar")
+    fig_user = px.histogram(
+        filtered_df, 
+        x="hr", 
+        y=["casual", "registered"], 
+        barmode="group",  
+        histfunc="avg",  
+        title="Rata-rata Perbedaan Penggunaan Kasual vs. Terdaftar",
+        labels={"hr": "Jam", "variable": "Tipe Pengguna"}
+    )
+    fig_user.update_layout(yaxis_title="Rata-rata Penyewaan")
 
 st.plotly_chart(fig_user)
+
+
 
 # Visualisasi Pengaruh Hari Libur
 fig_holiday = px.box(
