@@ -1,5 +1,7 @@
 # Bike Rental Dashboard
 
+![image](https://github.com/user-attachments/assets/b84a89a9-a3bd-40cc-8894-b86ce9a13312)
+
 This project is an interactive dashboard used to analyze bike rental data based on various factors such as weather, time, user type, holidays, and workdays. The dashboard is built using Streamlit and Plotly to provide interactive data visualizations that are easy to understand.
 
 ## Key Features
